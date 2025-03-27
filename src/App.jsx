@@ -1,26 +1,23 @@
 import React from "react";
-
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import HomeCards from "./components/HomeCards";
+import JobListings from "./components/JobLIstnings";
 const App = () => {
-  const name = "ahmed";
-  const x = 10;
-  const y = 20;
-  const names = ["ahmed", "lolo", "koo", "dgdg"];
-  const logIn = true;
-
   return (
     <>
-      <div className="text-5xl">App</div>
-      <p>
-        the sum of {x} and {y} is {x + y}
-      </p>
-      <ul>
-        {names.map((name, index) => (
-          <li key={index}>
-            {name}:{index}
-          </li>
-        ))}
-      </ul>
-      {logIn && <p>heloo</p>}
+      <Navbar />
+      <Hero />
+      <HomeCards />
+      <JobListings />
+      <section className="m-auto max-w-lg my-10 px-6">
+        <a
+          href="jobs.html"
+          className="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700"
+        >
+          View All Jobs
+        </a>
+      </section>
     </>
   );
 };
