@@ -3,6 +3,7 @@ import HomePage from "./Pages/HomePage";
 import MainLayout from "./layouts/MainLayout";
 import JobsPage from "./Pages/JobsPage";
 import NotFoundPage from "./Pages/NotFoundPage";
+import JobPage, { jobLoader } from "./Pages/JobPage";
 
 const router = createBrowserRouter([
   {
@@ -14,10 +15,14 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "jobs",
-        element: <JobsPage />,
+        path: "jobs/:id",
+        element: <JobPage />,
+        loader: jobLoader,
+        errorElement: <NotFoundPage />,
       },
+
       { path: "*", element: <NotFoundPage /> },
+      { path: "/jobs/:id", element: <JobPage />, loader: { jobLoader } },
     ],
   },
 ]);
