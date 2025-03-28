@@ -10,7 +10,7 @@ const JobListings = ({ isHome = false }) => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const apiUrl = isHome ? "/api/jobs" : "/api/jobs";
+        const apiUrl = isHome ? "/api/jobs?_limit=3" : "/api/jobs";
         const res = await fetch(apiUrl);
 
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
