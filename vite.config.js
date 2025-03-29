@@ -5,19 +5,17 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    host: true,
-    proxy: {
-      "/api": {
-        target: "http://localhost:8000",
-
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-        secure: false,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      },
-    },
+    proxy: import.meta.env.DEV
+      ? {
+          "/api": {
+            target: "http://localhost:8000",
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/api/, ""),
+          },
+        }
+      : undefined,
+  },
+  define: {
+    "process.env": process.env,
   },
 });
