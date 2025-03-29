@@ -15,6 +15,8 @@ import {
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
+
+import firebaseConfig from "./firebase-config.js";
 import { db } from "./firebase.js";
 const App = () => {
   const addJob = async (newJob) => {
