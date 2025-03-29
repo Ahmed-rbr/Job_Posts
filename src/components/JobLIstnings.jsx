@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { collection, query, limit, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase.js";
+import { db } from "./firebaseInit";
 import Spinner from "./Spinner";
 import JobListing from "./JobListing";
 
