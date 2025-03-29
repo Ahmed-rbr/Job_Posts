@@ -21,6 +21,17 @@ const App = () => {
     return;
   };
 
+  const updateJob = async (updateJob) => {
+    const res = await fetch(`/api/jobs/${updateJob.id}`, {
+      method: "Put",
+      headers: {
+        "Content-type": "appliction/json",
+      },
+      body: JSON.stringify(updateJob),
+    });
+    return;
+  };
+
   const deletJob = async (id) => {
     const res = await fetch(`/api/jobs/${id}`, {
       method: "DELETE",
@@ -39,7 +50,7 @@ const App = () => {
         },
         {
           path: "edit-job/:id",
-          element: <EditeJobPage />,
+          element: <EditeJobPage updateJobSubmit={updateJob} />,
           loader: jobLoader,
         },
         {
