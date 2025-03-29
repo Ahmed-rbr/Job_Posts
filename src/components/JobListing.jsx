@@ -1,84 +1,54 @@
-import { React, useState, useEffect } from "react";
 import { FaMapMarker } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase"; // Adjust path as needed
+import { useState } from "react";
+const JobListing = ({ job }) => {
+  const [showFullDesc, setShowFullDesc] = useState(false);
 
-const JobListing = () => {
-  const [jobs, setJobs] = useState([]);
-  const [showFullDesc, setShowFullDesc] = useState({});
-
-  // Fetch jobs from Firestore
-  useEffect(() => {
-    const fetchJobs = async () => {
-      const querySnapshot = await getDocs(collection(db, "jobs"));
-      const jobsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setJobs(jobsData);
-
-      // Initialize showFullDesc state for each job
-      const descState = {};
-      jobsData.forEach((job) => {
-        descState[job.id] = false;
-      });
-      setShowFullDesc(descState);
-    };
-
-    fetchJobs();
-  }, []);
-
-  const toggleDescription = (jobId) => {
-    setShowFullDesc((prev) => ({
-      ...prev,
-      [jobId]: !prev[jobId],
-    }));
+  const toggleDescription = () => {
+    setShowFullDesc((prev) => !prev);
   };
 
+  const description = showFullDesc
+    ? job.description
+    : `${job.description.substring(0, 90)}...`;
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {jobs.map((job) => {
-        let description = job.description;
-        if (!showFullDesc[job.id]) {
-          description = description.substring(0, 90) + "...";
-        }
+    <div className="bg-white rounded-xl shadow-md relative hover:shadow-lg transition-shadow">
+      <div className="p-4">
+        <div className="mb-6">
+          <span className="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full mb-2">
+            {job.type}
+          </span>
+          <h3 className="text-xl font-bold">{job.title}</h3>
+        </div>
 
-        return (
-          <div key={job.id} className="bg-white rounded-xl shadow-md relative">
-            <div className="p-4">
-              <div className="mb-6">
-                <div className="text-gray-600 my-2">{job.type}</div>
-                <h3 className="text-xl font-bold">{job.title}</h3>
-              </div>
+        <div className="mb-5 min-h-[4rem]">{description}</div>
 
-              <div className="mb-5">{description}</div>
-              <button
-                onClick={() => toggleDescription(job.id)}
-                className="text-indigo-500 mb-5 hover:text-indigo-600"
-              >
-                {showFullDesc[job.id] ? "Less" : "More"}
-              </button>
-              <h3 className="text-indigo-500 mb-2">{job.salary} / Year</h3>
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={toggleDescription}
+            className="text-indigo-500 hover:text-indigo-600 text-sm font-medium"
+          >
+            {showFullDesc ? "Show Less" : "Show More"}
+          </button>
+          <span className="text-indigo-500 font-medium">{job.salary}</span>
+        </div>
 
-              <div className="border border-gray-100 mb-5"></div>
+        <div className="border border-gray-100 mb-4"></div>
 
-              <div className="flex flex-col lg:flex-row justify-between mb-4">
-                <div className="text-orange-700 mb-3">
-                  <FaMapMarker className="inline text-lg mr-1 mb-1" />
-                  {job.location}
-                </div>
-                <Link
-                  to={`/jobs/${job.id}`}
-                  className="h-[36px] bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-center text-sm"
-                >
-                  Read More
-                </Link>
-              </div>
-            </div>
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
+          <div className="text-orange-700 flex items-center">
+            <FaMapMarker className="inline mr-1" />
+            {job.location}
           </div>
-        );
-      })}
+          <Link
+            to={`/jobs/${job.id}`}
+            className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-center text-sm transition-colors w-full lg:w-auto"
+          >
+            View Details
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

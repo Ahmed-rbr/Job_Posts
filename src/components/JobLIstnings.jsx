@@ -1,6 +1,8 @@
-import JobListing from "./JobListing";
 import { useState, useEffect } from "react";
+import { collection, query, limit, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase.js";
 import Spinner from "./Spinner";
+import JobListing from "./JobListing";
 
 const JobListings = ({ isHome = false }) => {
   const [jobs, setJobs] = useState([]);
@@ -8,24 +10,40 @@ const JobListings = ({ isHome = false }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let unsubscribe;
+
     const fetchJobs = async () => {
       try {
-        const apiUrl = isHome ? "/api/jobs?_limit=3" : "/api/jobs";
-        const res = await fetch(apiUrl);
+        const q = isHome
+          ? query(collection(db, "jobs"), limit(3))
+          : collection(db, "jobs");
 
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-        const data = await res.json();
-        setJobs(data);
+        unsubscribe = onSnapshot(
+          q,
+          (querySnapshot) => {
+            const jobsData = querySnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            setJobs(jobsData);
+            setLoading(false);
+          },
+          (error) => {
+            setError(error.message);
+            setLoading(false);
+          }
+        );
       } catch (error) {
-        console.error("Fetch error:", error);
         setError(error.message);
-      } finally {
         setLoading(false);
       }
     };
 
     fetchJobs();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [isHome]);
 
   return (
