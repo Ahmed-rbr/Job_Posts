@@ -8,35 +8,39 @@ import Spinner from "./components/Spinner";
 import { Suspense } from "react";
 import AddJobPage from "./Pages/AddJobPage";
 import EditeJobPage from "./Pages/EditeJobPage";
-
+import {
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import { db } from "./firebase.js";
 const App = () => {
   const addJob = async (newJob) => {
-    const res = await fetch("/api/jobs", {
-      method: "POST",
-      headers: {
-        "Content-type": "appliction/json",
-      },
-      body: JSON.stringify(newJob),
-    });
-    return;
+    try {
+      const docRef = await addDoc(collection(db, "jobs"), newJob);
+      return { id: docRef.id, ...newJob };
+    } catch (error) {
+      throw new Error("Failed to add job: " + error.message);
+    }
   };
 
-  const updateJob = async (updateJob) => {
-    const res = await fetch(`/api/jobs/${updateJob.id}`, {
-      method: "Put",
-      headers: {
-        "Content-type": "appliction/json",
-      },
-      body: JSON.stringify(updateJob),
-    });
-    return;
+  const updateJob = async (updatedJob) => {
+    try {
+      await updateDoc(doc(db, "jobs", updatedJob.id), updatedJob);
+      return updatedJob;
+    } catch (error) {
+      throw new Error("Failed to update job: " + error.message);
+    }
   };
 
-  const deletJob = async (id) => {
-    const res = await fetch(`/api/jobs/${id}`, {
-      method: "DELETE",
-    });
-    return;
+  const deleteJob = async (id) => {
+    try {
+      await deleteDoc(doc(db, "jobs", id));
+    } catch (error) {
+      throw new Error("Failed to delete job: " + error.message);
+    }
   };
 
   const router = createBrowserRouter([
@@ -49,7 +53,7 @@ const App = () => {
           element: <HomePage />,
         },
         {
-          path: "edit-job/:id",
+          path: "/edit-job/:id",
           element: <EditeJobPage updateJobSubmit={updateJob} />,
           loader: jobLoader,
         },
@@ -59,8 +63,8 @@ const App = () => {
           errorElement: <NotFoundPage />,
         },
         {
-          path: "jobs/:id",
-          element: <JobPage deletJob={deletJob} />,
+          path: "/jobs/:id",
+          element: <JobPage deleteJob={deleteJob} />,
           loader: jobLoader,
           errorElement: <NotFoundPage />,
         },
@@ -68,7 +72,10 @@ const App = () => {
           path: "*",
           element: <NotFoundPage />,
         },
-        { path: "add-job", element: <AddJobPage addJobSubmit={addJob} /> },
+        {
+          path: "add-job",
+          element: <AddJobPage addJobSubmit={addJob} />,
+        },
       ],
     },
   ]);
