@@ -17,7 +17,7 @@ import {
 } from "firebase/firestore";
 
 import firebaseConfig from "./firebase-config.js";
-import { db } from "./firebase.js";
+import { db } from "./firebaseInit";
 const App = () => {
   const addJob = async (newJob) => {
     try {
